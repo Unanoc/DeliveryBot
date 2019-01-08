@@ -11,27 +11,64 @@ func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
 	// if message if "/start", it always resets the state of user and sets stateNull
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
-		database.SetUserState(db, userID, stateNull)
+		database.CreateOrUpdateUserState(db, userID, StateNull)
 		return
 	}
 
 	userState := database.GetUserStateByID(db, userID)
+	stateHandler(bot, db, userID, text, userState)
+}
 
-	// continue interaction with user if state > stateNull
-	if userState > stateNull {
-		stateHandler(bot, db, userID, text, userState)
-		return
+func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string, state int) {
+	switch state {
+	case StateNull:
+		if strings.ToLower(text) == "заказ" {
+			sendMessage(bot, userID, askingFirstNameMsg)
+			database.CreateOrUpdateUserState(db, userID, StateFirstName)
+		} else {
+			sendMessage(bot, userID, errorMsg)
+		}
+	case StateFirstName:
+		sendMessage(bot, userID, askingLastNameMsg)
+		database.CreateOrUpdateUserState(db, userID, StateLastName)
+	case StateLastName:
+		sendMessage(bot, userID, askingPhone)
+		database.CreateOrUpdateUserState(db, userID, StatePhone)
+	case StatePhone:
+		sendMessage(bot, userID, askingCompanyMsg)
+		database.CreateOrUpdateUserState(db, userID, StateCompanyName)
+	case StateCompanyName:
+		sendMessage(bot, userID, askingAddressMsg)
+		database.CreateOrUpdateUserState(db, userID, StateAddress)
+	case StateAddress:
+		sendMessage(bot, userID, askingDateMsg)
+		database.CreateOrUpdateUserState(db, userID, StateDate)
+	case StateDate:
+		sendMessage(bot, userID, confirmationMsg)
+		order, err := database.SelectFinishedOrderByID(db, userID)
+		if err != nil {
+			sendMessage(bot, userID, confirmationErrorMsg)
+			database.CreateOrUpdateUserState(db, userID, StateNull)
+			return
+		}
+		sendMessage(bot, userID, order.String())
+		database.CreateOrUpdateUserState(db, userID, StateConfirmation)
+	case StateConfirmation:
+		if strings.ToLower(text) == "да" {
+			sendMessage(bot, userID, successMsg)
+			database.SetFinishFlagOrder(db, userID)
+			database.CreateOrUpdateUserState(db, userID, StateNull)
+		} else {
+			if strings.ToLower(text) == "нет" {
+				sendMessage(bot, userID, cancelOrderMsg)
+				database.CreateOrUpdateUserState(db, userID, StateNull)
+			} else {
+				sendMessage(bot, userID, confirmationMsg)
+			}
+		}
+	default:
+		sendMessage(bot, userID, errorMsg)
 	}
-
-	// the first state change after stateNull
-	if strings.ToLower(text) == "анкета" {
-		database.SetUserState(db, userID, stateStartingOrder)
-		stateHandler(bot, db, userID, text, stateStartingOrder)
-		return
-	}
-
-	// when stateNull and message != "start"
-	sendMessage(bot, userID, errorMsg)
 }
 
 func sendMessage(bot *vkapi.Client, userID int64, text string) {
@@ -41,49 +78,4 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 			text,
 		),
 	)
-}
-
-func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string, state int) {
-	switch state {
-	case stateStartingOrder:
-		sendMessage(bot, userID, askingFirstNameMsg)
-		database.SetUserState(db, userID, stateFirstName)
-	case stateFirstName:
-		sendMessage(bot, userID, askingLastNameMsg)
-		database.SetUserState(db, userID, stateLastName)
-	case stateLastName:
-		sendMessage(bot, userID, askingPhone)
-		database.SetUserState(db, userID, statePhone)
-	case statePhone:
-		sendMessage(bot, userID, askingCompanyMsg)
-		database.SetUserState(db, userID, stateCompanyName)
-	case stateCompanyName:
-		sendMessage(bot, userID, askingAddressMsg)
-		database.SetUserState(db, userID, stateAddress)
-	case stateAddress:
-		sendMessage(bot, userID, askingDateMsg)
-		database.SetUserState(db, userID, stateDate)
-	case stateDate:
-		sendMessage(bot, userID, confirmationMsg)
-		profile, err := database.selectProfileByID(db, userID)
-		if err != nil {
-			sendMessage(bot, userID, confirmationErrorMsg)
-			database.SetUserState(db, userID, stateNull)
-			return
-		}
-		sendMessage(bot, userID, profile.String())
-		database.SetUserState(db, userID, stateConfirmation)
-	case stateConfirmation:
-		if strings.ToLower(text) == "да" {
-			sendMessage(bot, userID, successMsg)
-			database.SetUserState(db, userID, stateNull)
-		} else {
-			if strings.ToLower(text) == "нет" {
-				sendMessage(bot, userID, cancelOrderMsg)
-				database.SetUserState(db, userID, stateNull)
-			} else {
-				sendMessage(bot, userID, confirmationMsg)
-			}
-		}
-	}
 }

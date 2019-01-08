@@ -1,33 +1,15 @@
 package bot
 
-import (
-	"time"
-)
-
-// Order is a struct for order confirmation.
-type Order struct {
-	OrderID    int
-	UserID     int64
-	FirstName  string
-	LastName   string
-	Phone      string
-	Company    string
-	Address    string
-	Date       time.Time
-	IsFinished bool
-}
-
 // user's states
 const (
-	stateNull = iota
-	stateStartingOrder
-	stateFirstName
-	stateLastName
-	statePhone
-	stateCompanyName
-	stateAddress
-	stateDate
-	stateConfirmation
+	StateNull = iota
+	StateFirstName
+	StateLastName
+	StatePhone
+	StateCompanyName
+	StateAddress
+	StateDate
+	StateConfirmation
 )
 
 // bot's replies
@@ -36,7 +18,7 @@ const (
 	startMsg = `
 	Привет! Я умею легко организовывать процесс доставки.
 	Для этого необходимо заполнить анкету! 
-	Отправь мне сообщение "Анкета" и начинай заполнять.
+	Отправь мне сообщение "Заказ" и начинай заполнять.
 	`
 
 	// error
@@ -45,9 +27,10 @@ const (
 	какие сообщения я понимаю.
 	`
 
-	// profile
+	// order
 	askingFirstNameMsg = `
-	Введи имя (для отмены процесса, напиши "/start")
+	Введи имя
+	(для отмены процесса, напиши "/start")
 	`
 	askingLastNameMsg = `
 	Введи фамилию
@@ -65,10 +48,11 @@ const (
 	Введи дату доставки
 	`
 	confirmationMsg = `
-	Правильно ли составлен заказ? (да/нет либо для отмены напишите "/start")
+	Правильно ли составлен заказ? 
+	(да/нет либо для отмены напишите "/start")
 	`
 	confirmationErrorMsg = `
-	Не удалось составить анкету, попробуйте снова
+	Не удалось составить заказ, попробуйте снова...
 	`
 	successMsg = `
 	Заказ успешно оформлен!
