@@ -1,0 +1,8 @@
+github.com/dimonchik0036/vk-api v0.0.0-20181108155455-9295c719fadc h1:uycqcs/3145s40LPAtb9S45q2Udjxf1HCCtjNRtmGlo=
+github.com/dimonchik0036/vk-api v0.0.0-20181108155455-9295c719fadc/go.mod h1:LQtJLj4qqMwfkRz1GsUHYBh1D3OK6zX9xPmYnZh51bA=
+github.com/jackc/pgx v3.3.0+incompatible h1:Wa90/+qsITBAPkAZjiByeIGHFcj3Ztu+VzrrIpHjL90=
+github.com/jackc/pgx v3.3.0+incompatible/go.mod h1:0ZGrqGqkRlliWnWB4zKnWtjbSWbGkVEFm4TeybAXq+I=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
+github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/technoweenie/multipartstreamer v1.0.1 h1:XRztA5MXiR1TIRHxH2uNxXxaIkKQDeX7m2XsSOlQEnM=
+github.com/technoweenie/multipartstreamer v1.0.1/go.mod h1:jNVxdtShOxzAsukZwTSw6MDx5eUJoiEBsSvzDU9uzog=
