@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
   "age"       INT
 );
 
-CREATE TABLE IF NOT EXISTS order (
+-- TABLE "orders" --
+CREATE TABLE IF NOT EXISTS orders (
   "id"          SERIAL UNIQUE PRIMARY KEY,
   "user_id"     BIGINT NOT NULL,
   "firstname"   CITEXT DEFAULT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS order (
   "phone"       CITEXT DEFAULT NULL,
   "company"     CITEXT DEFAULT NULL,
   "address"     CITEXT DEFAULT NULL,
-  "date"        TIMESTAMPTZ(3) DEFAULT NULL
+  "date"        TIMESTAMPTZ(3) DEFAULT NULL,
+  "state"       INT NOT NULL DEFAULT 0,
   "is_finished" BOOLEAN DEFAULT FALSE
 )
