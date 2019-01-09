@@ -8,15 +8,18 @@ import (
 )
 
 func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
+	userState := database.GetUserStateByID(db, userID)
 	// if message if "/start", it always resets the state of user and sets stateNull
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
 		// TODO: заполнение таблицы Users по входящему сообщению
+		if userState != 0 {
+			database.DeleteOrder(db, userID)
+		}
 		database.CreateOrUpdateUserState(db, userID, StateNull)
 		return
 	}
 
-	userState := database.GetUserStateByID(db, userID)
 	stateHandler(bot, db, userID, text, userState)
 }
 
@@ -69,6 +72,7 @@ func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string,
 			if strings.ToLower(text) == "нет" {
 				sendMessage(bot, userID, cancelOrderMsg)
 				database.CreateOrUpdateUserState(db, userID, StateNull)
+				database.DeleteOrder(db, userID)
 			} else {
 				sendMessage(bot, userID, confirmationMsg)
 			}
@@ -89,4 +93,3 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 
 // Добавить валидацию на дату и возможно не только
 // заполнения таблицы users
-// после отмен заказа поставить флаг в таблицу либо удалять запись
