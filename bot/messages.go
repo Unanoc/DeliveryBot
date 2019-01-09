@@ -79,3 +79,7 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 		),
 	)
 }
+
+// Добавить валидацию на дату и возможно не только
+// заполнение базы после каждого поля orders
+// заполнения таблицы users
