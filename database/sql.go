@@ -22,23 +22,23 @@ const sqlSelectUserStateByUserID = `
 // CreateOrder
 const sqlInsertOrder = `
 	INSERT INTO orders
-	("user_id", "firstname", "lastname", "phone", "company", "address", "delivery_date", "order_date")
-	VALUES ($1, NULL, NULL, NULL, NULL, NULL, NULL, $2)
+	("user_id", "order_date")
+	VALUES ($1, $2)
 `
 
 // UpdateOrder
-var sqlUpdateOrder = "UPDATE orders SET %s = '%s' WHERE user_id = $1 AND order_date = (SELECT MAX(order_date) FROM orders)"
+var sqlUpdateOrder = "UPDATE orders SET %s = '%s' WHERE user_id = $1 AND order_date = (SELECT MAX(order_date) FROM orders WHERE user_id = $1)"
 
 // SelectOrderByID
 const sqlSelectOrderByID = `
 	SELECT "id", "firstname", "lastname", "phone", "company", "address", "delivery_date", "order_date"
 	FROM orders
-	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders)
+	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders WHERE "user_id" = $1)
 `
 
 // DeleteOrder
 const sqlDeleteOrder = `
 	DELETE 
 	FROM orders 
-	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders)
+	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders WHERE "user_id" = $1)
 `

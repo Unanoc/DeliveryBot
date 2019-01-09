@@ -9,10 +9,12 @@ import (
 
 func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
 	userState := database.GetUserStateByID(db, userID)
-	// if message if "/start", it always resets the state of user and sets stateNull
+
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
-		// TODO: заполнение таблицы Users по входящему сообщению
+		//заполнение таблицы Users по входящему сообщению
+
+		// removing order if it is not completed
 		if userState != 0 {
 			database.DeleteOrder(db, userID)
 		}
@@ -91,5 +93,4 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 	)
 }
 
-// Добавить валидацию на дату и возможно не только
 // заполнения таблицы users

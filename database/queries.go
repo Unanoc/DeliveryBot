@@ -14,20 +14,32 @@ func CreateOrUpdateUserState(db *DB, userID int64, state int) {
 
 // GetUserStateByID selects the state of users.
 func GetUserStateByID(db *DB, userID int64) (state int) {
-	db.Conn.QueryRow(sqlSelectUserStateByUserID, &userID).Scan(&state)
+	err := db.Conn.QueryRow(sqlSelectUserStateByUserID, &userID).Scan(&state)
+	if err != nil {
+		fmt.Println("GetUserStateByID")
+		fmt.Println(err)
+	}
 	return // if user's state is absent, return 0 by default
 }
 
 // CreateOrder creates an order.
 func CreateOrder(db *DB, userID int64) {
 	orderDate := time.Now().Format("2006-01-02 15:04:05")
-	db.Conn.Exec(sqlInsertOrder, &userID, &orderDate)
+	_, err := db.Conn.Exec(sqlInsertOrder, &userID, &orderDate)
+	if err != nil {
+		fmt.Println("CreateOrder")
+		fmt.Println(err)
+	}
 }
 
 // UpdateOrder updates order.
 func UpdateOrder(db *DB, userID int64, field, value string) {
 	sqlQuery := fmt.Sprintf(sqlUpdateOrder, field, value)
-	db.Conn.Exec(sqlQuery, &userID)
+	_, err := db.Conn.Exec(sqlQuery, &userID)
+	if err != nil {
+		fmt.Println("UpdateOrder")
+		fmt.Println(err)
+	}
 }
 
 // SelectOrderByID selects an order by user_id from table.
@@ -45,6 +57,8 @@ func SelectOrderByID(db *DB, userID int64) (*Order, error) {
 	)
 
 	if err != nil {
+		fmt.Println("SelectOrderByID")
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -53,5 +67,9 @@ func SelectOrderByID(db *DB, userID int64) (*Order, error) {
 
 // DeleteOrder deletes a row from table "orders".
 func DeleteOrder(db *DB, userID int64) {
-	db.Conn.Exec(sqlDeleteOrder, userID)
+	_, err := db.Conn.Exec(sqlDeleteOrder, userID)
+	if err != nil {
+		fmt.Println("DeleteOrder")
+		fmt.Println(err)
+	}
 }
