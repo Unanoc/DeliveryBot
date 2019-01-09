@@ -11,6 +11,7 @@ func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
 	// if message if "/start", it always resets the state of user and sets stateNull
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
+		// TODO: заполнение таблицы Users по входящему сообщению
 		database.CreateOrUpdateUserState(db, userID, StateNull)
 		return
 	}
@@ -24,28 +25,35 @@ func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string,
 	case StateNull:
 		if strings.ToLower(text) == "заказ" {
 			sendMessage(bot, userID, askingFirstNameMsg)
+			database.CreateOrder(db, userID)
 			database.CreateOrUpdateUserState(db, userID, StateFirstName)
 		} else {
 			sendMessage(bot, userID, errorMsg)
 		}
 	case StateFirstName:
 		sendMessage(bot, userID, askingLastNameMsg)
+		database.UpdateOrder(db, userID, "firstname", text)
 		database.CreateOrUpdateUserState(db, userID, StateLastName)
 	case StateLastName:
 		sendMessage(bot, userID, askingPhone)
+		database.UpdateOrder(db, userID, "lastname", text)
 		database.CreateOrUpdateUserState(db, userID, StatePhone)
 	case StatePhone:
 		sendMessage(bot, userID, askingCompanyMsg)
+		database.UpdateOrder(db, userID, "phone", text)
 		database.CreateOrUpdateUserState(db, userID, StateCompanyName)
 	case StateCompanyName:
 		sendMessage(bot, userID, askingAddressMsg)
+		database.UpdateOrder(db, userID, "company", text)
 		database.CreateOrUpdateUserState(db, userID, StateAddress)
 	case StateAddress:
 		sendMessage(bot, userID, askingDateMsg)
+		database.UpdateOrder(db, userID, "address", text)
 		database.CreateOrUpdateUserState(db, userID, StateDate)
 	case StateDate:
 		sendMessage(bot, userID, confirmationMsg)
-		order, err := database.SelectFinishedOrderByID(db, userID)
+		database.UpdateOrder(db, userID, "delivery_date", text)
+		order, err := database.SelectOrderByID(db, userID)
 		if err != nil {
 			sendMessage(bot, userID, confirmationErrorMsg)
 			database.CreateOrUpdateUserState(db, userID, StateNull)
@@ -56,7 +64,6 @@ func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string,
 	case StateConfirmation:
 		if strings.ToLower(text) == "да" {
 			sendMessage(bot, userID, successMsg)
-			database.SetFinishFlagOrder(db, userID)
 			database.CreateOrUpdateUserState(db, userID, StateNull)
 		} else {
 			if strings.ToLower(text) == "нет" {
@@ -81,5 +88,5 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 }
 
 // Добавить валидацию на дату и возможно не только
-// заполнение базы после каждого поля orders
 // заполнения таблицы users
+// после отмен заказа поставить флаг в таблицу либо удалять запись
