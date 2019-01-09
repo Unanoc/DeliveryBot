@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -13,7 +12,7 @@ func CreateOrUpdateUserState(db *DB, userID int64, state int) {
 	}
 }
 
-// GetUserStateByID selects the state of orders.
+// GetUserStateByID selects the state of users.
 func GetUserStateByID(db *DB, userID int64) (state int) {
 	db.Conn.QueryRow(sqlSelectUserStateByUserID, &userID).Scan(&state)
 	return // if user's state is absent, return 0 by default
@@ -27,24 +26,14 @@ func CreateOrder(db *DB, userID int64) {
 
 // UpdateOrder updates order.
 func UpdateOrder(db *DB, userID int64, field, value string) {
-	sqlQuery := fmt.Sprintf("UPDATE orders SET %s = '%s' WHERE user_id = $1 AND order_date = (SELECT MAX(order_date) FROM orders)", field, value)
-
-	if _, err := db.Conn.Exec(sqlQuery, &userID); err != nil {
-		log.Println("1")
-		log.Println(err)
-		log.Println()
-	}
+	sqlQuery := fmt.Sprintf(sqlUpdateOrder, field, value)
+	db.Conn.Exec(sqlQuery, &userID)
 }
 
-// SelectOrderByID selects an order by user_id from db.
+// SelectOrderByID selects an order by user_id from table.
 func SelectOrderByID(db *DB, userID int64) (*Order, error) {
 	var order Order
-	err := db.Conn.QueryRow(`
-		SELECT "id", "firstname", "lastname", "phone", "company", "address", "delivery_date", "order_date"
-		FROM orders
-		WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders)
-	`, &userID,
-	).Scan(
+	err := db.Conn.QueryRow(sqlSelectOrderByID, &userID).Scan(
 		&order.OrderID,
 		&order.FirstName,
 		&order.LastName,
@@ -56,11 +45,13 @@ func SelectOrderByID(db *DB, userID int64) (*Order, error) {
 	)
 
 	if err != nil {
-		log.Println("2")
-		log.Println(err)
-		log.Println()
 		return nil, err
 	}
 
 	return &order, nil
+}
+
+// DeleteOrder deletes a row from table "orders".
+func DeleteOrder(db *DB, userID int64) {
+	db.Conn.Exec(sqlDeleteOrder, userID)
 }
