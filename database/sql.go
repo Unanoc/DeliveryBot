@@ -1,6 +1,6 @@
 package database
 
-// CreateOrUpdateUserState //
+// CreateOrUpdateUserState
 const sqlInsertUserState = `
 	INSERT INTO states
 	("user_id", "state")
@@ -12,16 +12,33 @@ const sqlUpdateUserState = `
 	WHERE "user_id" = $1
 `
 
-// GetUserStateByID //
+// GetUserStateByID
 const sqlSelectUserStateByUserID = `
 	SELECT "state" 
 	FROM states 
 	WHERE "user_id" = $1
 `
 
-// CreateOrder //
+// CreateOrder
 const sqlInsertOrder = `
 	INSERT INTO orders
 	("user_id", "firstname", "lastname", "phone", "company", "address", "delivery_date", "order_date")
 	VALUES ($1, NULL, NULL, NULL, NULL, NULL, NULL, $2)
+`
+
+// UpdateOrder
+var sqlUpdateOrder = "UPDATE orders SET %s = '%s' WHERE user_id = $1 AND order_date = (SELECT MAX(order_date) FROM orders)"
+
+// SelectOrderByID
+const sqlSelectOrderByID = `
+	SELECT "id", "firstname", "lastname", "phone", "company", "address", "delivery_date", "order_date"
+	FROM orders
+	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders)
+`
+
+// DeleteOrder
+const sqlDeleteOrder = `
+	DELETE 
+	FROM orders 
+	WHERE "user_id" = $1 AND "order_date" = (SELECT MAX("order_date") FROM orders)
 `
