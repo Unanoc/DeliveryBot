@@ -9,14 +9,19 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- TABLE "orders" --
 CREATE TABLE IF NOT EXISTS orders (
-  "id"          SERIAL UNIQUE PRIMARY KEY,
-  "user_id"     BIGINT NOT NULL,
-  "firstname"   CITEXT DEFAULT NULL,
-  "lastname"    CITEXT DEFAULT NULL,
-  "phone"       CITEXT DEFAULT NULL,
-  "company"     CITEXT DEFAULT NULL,
-  "address"     CITEXT DEFAULT NULL,
-  "date"        TIMESTAMPTZ(3) DEFAULT NULL,
-  "state"       INT NOT NULL DEFAULT 0,
-  "is_finished" BOOLEAN DEFAULT FALSE
-)
+  "id"            SERIAL UNIQUE PRIMARY KEY,
+  "user_id"       BIGINT NOT NULL,
+  "firstname"     CITEXT DEFAULT NULL,
+  "lastname"      CITEXT DEFAULT NULL,
+  "phone"         CITEXT DEFAULT NULL,
+  "company"       CITEXT DEFAULT NULL,
+  "address"       CITEXT DEFAULT NULL,
+  "delivery_date" CITEXT DEFAULT NULL,
+  "order_date"    TIMESTAMPTZ(3) DEFAULT NULL
+);
+
+-- TABLE "states" --
+CREATE TABLE IF NOT EXISTS states (
+  "user_id"     BIGINT UNIQUE PRIMARY KEY NOT NULL,
+  "state"       INT DEFAULT 0 NOT NULL
+);
