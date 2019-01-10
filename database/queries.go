@@ -38,8 +38,9 @@ func UpdateOrder(db *DB, userID int64, field, value string) {
 }
 
 // SelectOrderByID selects an order by user_id from table.
-func SelectOrderByID(db *DB, userID int64) (order *Order, err error) {
-	err = db.Conn.QueryRow(sqlSelectOrderByID, &userID).Scan(
+func SelectOrderByID(db *DB, userID int64) (*Order, error) {
+	var order Order
+	err := db.Conn.QueryRow(sqlSelectOrderByID, &userID).Scan(
 		&order.OrderID,
 		&order.FirstName,
 		&order.LastName,
@@ -54,7 +55,7 @@ func SelectOrderByID(db *DB, userID int64) (order *Order, err error) {
 		return nil, err
 	}
 
-	return
+	return &order, nil
 }
 
 // DeleteOrder deletes a row from table "orders".
