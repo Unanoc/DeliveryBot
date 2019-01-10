@@ -29,12 +29,11 @@ WORKDIR /home
 RUN mkdir vkbot
 COPY . vkbot/
 WORKDIR /home/vkbot/
-RUN go build .
 
 # PostgreSQL creating of database
 USER postgres
 RUN /etc/init.d/postgresql start &&\
-    ./scripts/create_db.sh &&\
-    /etc/init.d/postgresql stop
+    ./scripts/create_db.sh
 
 USER root
+RUN go build
