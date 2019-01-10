@@ -14,7 +14,7 @@ func Run(db *database.DB, accessToken string) {
 		log.Panic(err)
 	}
 
-	// bot.Log(true)
+	bot.Log(true)
 
 	if err := bot.InitLongPoll(0, 2); err != nil {
 		log.Panic(err)

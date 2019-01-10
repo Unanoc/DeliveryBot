@@ -1,0 +1,4 @@
+{
+    "connection": "postgres://vkbot:vkbot@localhost:5432/vkbot",
+    "access_token": "VK ACCESS TOKEN"
+}

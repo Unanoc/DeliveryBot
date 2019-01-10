@@ -26,14 +26,20 @@ RUN apt-get -y install gcc musl-dev && GO11MODULE=on
 
 # Getting folder with project
 WORKDIR /home
-RUN mkdir vkbot
-COPY . vkbot/
-WORKDIR /home/vkbot/
+RUN mkdir vk-bot
+COPY . vk-bot/
+WORKDIR /home/vk-bot/
+RUN go build .
 
 # PostgreSQL creating of database
 USER postgres
 RUN /etc/init.d/postgresql start &&\
-    ./scripts/create_db.sh
+    ./scripts/create_db.sh &&\
+    /etc/init.d/postgresql stop
 
+# Open PostgreSQL for network
 USER root
-RUN go build
+VOLUME ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+EXPOSE 5432
+
+CMD service postgresql start && ./vkbot -config="config.json"
