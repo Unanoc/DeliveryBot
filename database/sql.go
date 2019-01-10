@@ -1,5 +1,20 @@
 package database
 
+// CreateOrUpdateUser
+const sqlInsertUser = `
+	INSERT INTO users
+	("id", "firstname", "lastname", "age", "sex")
+	VALUES ($1, $2, $3, $4, $5)
+`
+const sqlUpdateUser = `
+	UPDATE users
+	SET "firstname" = $2, 
+		"lastname" = $3,
+		"age" = $4, 
+		"sex" = $5
+	WHERE "id" = $1
+`
+
 // CreateOrUpdateUserState
 const sqlInsertUserState = `
 	INSERT INTO states

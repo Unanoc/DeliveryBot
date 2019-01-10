@@ -1,7 +1,10 @@
 package bot
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
+	"time"
 	"vkbot/database"
 
 	vkapi "github.com/dimonchik0036/vk-api"
@@ -12,8 +15,7 @@ func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
 
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
-		//заполнение таблицы Users по входящему сообщению
-
+		saveUserInfo(bot, db, userID)
 		// removing order if it is not completed
 		if userState != 0 {
 			database.DeleteOrder(db, userID)
@@ -93,4 +95,43 @@ func sendMessage(bot *vkapi.Client, userID int64, text string) {
 	)
 }
 
-// заполнения таблицы users
+func getAgeByBirth(bday string) int {
+	dayMonthYear := strings.Split(bday, ".")
+	if len(dayMonthYear) < 3 {
+		return -1
+	}
+	userYear, _ := strconv.Atoi(dayMonthYear[2])
+	userMonth, _ := strconv.Atoi(dayMonthYear[1])
+	userDay, _ := strconv.Atoi(dayMonthYear[0])
+
+	yearNow, monthNow, dayNow := time.Now().Date()
+	age := yearNow - userYear
+
+	if int(monthNow) < userMonth {
+		age--
+	}
+
+	if int(monthNow) == userMonth {
+		if dayNow < userDay {
+			age--
+		}
+	}
+	return age
+}
+
+func saveUserInfo(bot *vkapi.Client, db *database.DB, userID int64) {
+	info, err := bot.UsersInfo(vkapi.NewDstFromUserID(userID), "bdate", "first_name", "last_name", "sex")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	database.CreateOrUpdateUser(
+		db,
+		userID,
+		info[0].FirstName,
+		info[0].LastName,
+		getAgeByBirth(info[0].Bdate),
+		info[0].Sex,
+	)
+}

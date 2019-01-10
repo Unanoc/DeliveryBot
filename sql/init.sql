@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS users (
   "id"        BIGINT UNIQUE NOT NULL PRIMARY KEY,
   "firstname" CITEXT NOT NULL,
   "lastname"  CITEXT NOT NULL,
-  "sex"       CHAR[1],
-  "age"       INT
+  "age"       INT,
+  "sex"       INT
 );
 
 -- TABLE "orders" --
