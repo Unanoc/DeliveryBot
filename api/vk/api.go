@@ -118,7 +118,6 @@ func (vk *BaseAPI) Request(method string, params interface{}) (json.RawMessage, 
 	}
 
 	u.RawQuery = q.Encode()
-
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err
