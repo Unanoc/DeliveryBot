@@ -35,6 +35,7 @@ func Run(db *database.DB, accessToken string, groupID int) {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
+
 	go func(cancel context.CancelFunc) {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
@@ -48,8 +49,6 @@ func Run(db *database.DB, accessToken string, groupID int) {
 	}
 
 	for e := range events {
-		// log.Printf("Got event: %+v", e)
-
 		switch ev := e.Event.(type) {
 		case vk.MessageNew:
 			from := ev.PeerID
