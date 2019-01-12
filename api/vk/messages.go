@@ -6,12 +6,12 @@ import (
 
 //easyjson:json
 type Message struct {
-	ID       int    `json: "id"`
+	ID       int    `json:"id"`
 	Date     int    `json:"date"`
-	PeerID   int    `json: peer_id`
-	FromID   int    `json: "from_id"`
-	Text     string `json: "text"`
-	RandomID int    `json: random_id`
+	PeerID   int    `json:"peer_id"`
+	FromID   int    `json:"from_id"`
+	Text     string `json:"text"`
+	RandomID int    `json:"random_id"`
 }
 
 // Messages implements VK API namespace `messages`
