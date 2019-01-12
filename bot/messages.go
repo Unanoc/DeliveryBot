@@ -126,8 +126,8 @@ func getAgeByBirth(bday string) int {
 
 func saveUserInfo(bot *bot.Bot, db *database.DB, userID int) {
 	a, err := bot.Request("users.get", vk.UsersGetParams{
-		UserIDs: []string{strconv.Itoa(userID)},
-		Fields:  []string{"sex, bdate"},
+		UserIDs: strconv.Itoa(userID),
+		Fields:  "sex, bdate",
 	})
 	if err != nil {
 		fmt.Println(err)
