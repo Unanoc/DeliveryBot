@@ -1,21 +1,21 @@
 package bot
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
+	"vkbot/api/bot"
+	"vkbot/api/vk"
 	"vkbot/database"
-
-	vkapi "github.com/dimonchik0036/vk-api"
 )
 
-func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
+func msgHandler(bot *bot.Bot, db *database.DB, userID int, text string) {
 	userState := database.GetUserStateByID(db, userID)
 
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
-		saveUserInfo(bot, db, userID)
+		// saveUserInfo(bot, db, userID)
 		// removing order if it is not completed
 		if userState != 0 {
 			database.DeleteOrder(db, userID)
@@ -27,7 +27,7 @@ func msgHandler(bot *vkapi.Client, db *database.DB, userID int64, text string) {
 	stateHandler(bot, db, userID, text, userState)
 }
 
-func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string, state int) {
+func stateHandler(bot *bot.Bot, db *database.DB, userID int, text string, state int) {
 	switch state {
 	case StateNull:
 		if strings.ToLower(text) == "заказ" {
@@ -86,13 +86,16 @@ func stateHandler(bot *vkapi.Client, db *database.DB, userID int64, text string,
 	}
 }
 
-func sendMessage(bot *vkapi.Client, userID int64, text string) {
-	bot.SendMessage(
-		vkapi.NewMessage(
-			vkapi.NewDstFromUserID(userID),
-			text,
-		),
-	)
+func sendMessage(bot *bot.Bot, from int, text string) {
+	msg := vk.MessagesSendParams{
+		PeerID:  from,
+		Message: text,
+	}
+	_, err := vk.Messages{bot}.Send(msg)
+
+	if err != nil {
+		log.Printf("Cant send reply to (%d): %v", msg.PeerID, err)
+	}
 }
 
 func getAgeByBirth(bday string) int {
@@ -119,19 +122,19 @@ func getAgeByBirth(bday string) int {
 	return age
 }
 
-func saveUserInfo(bot *vkapi.Client, db *database.DB, userID int64) {
-	info, err := bot.UsersInfo(vkapi.NewDstFromUserID(userID), "bdate", "first_name", "last_name", "sex")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+// func saveUserInfo(bot *bot.Bot, db *database.DB, userID int) {
+// 	info, err := bot.UsersInfo(vkapi.NewDstFromUserID(userID), "bdate", "first_name", "last_name", "sex")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
 
-	database.CreateOrUpdateUser(
-		db,
-		userID,
-		info[0].FirstName,
-		info[0].LastName,
-		getAgeByBirth(info[0].Bdate),
-		info[0].Sex,
-	)
-}
+// 	database.CreateOrUpdateUser(
+// 		db,
+// 		userID,
+// 		info[0].FirstName,
+// 		info[0].LastName,
+// 		getAgeByBirth(info[0].Bdate),
+// 		info[0].Sex,
+// 	)
+// }

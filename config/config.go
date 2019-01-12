@@ -4,4 +4,5 @@ package config
 type Config struct {
 	Connection  string `json:"connection"`
 	AccessToken string `json:"access_token"`
+	GroupID     int    `json:"group_id"`
 }

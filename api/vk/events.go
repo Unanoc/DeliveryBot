@@ -6,20 +6,7 @@ type CallbackEvent struct {
 	GroupID int
 	// Secret for Callback API
 	Secret string
-	// Event itself
-	//
-	// One of Confirmation, MessageNew, MessageReply, MessageEdit,
-	// MessageAllow, MessageDeny, MessageTypingState, PhotoNew,
-	// PhotoCommentNew, PhotoCommentEdit, PhotoCommentRestore,
-	// PhotoCommentDelete, AudioNew, VideoNew, VideoCommentNew,
-	// VideoCommentEdit, VideoCommentRestore, VideoCommentDelete,
-	// WallPostNew, WallRepost, WallReplyNew, WallReplyEdit,
-	// WallReplyRestore, WallReplyDelete, BoardPostNew, BoardPostEdit,
-	// BoardPostRestore, BoardPostDelete, MarketCommentNew,
-	// MarketCommentEdit, MarketCommentRestore, MarketCommentDelete,
-	// GroupLeave, GroupJoin, UserBlock, UserUnblock, PollVoteNew,
-	// GroupOfficersEdit, GroupChangeSettings, GroupChangePhoto,
-	// LeadFormsNew, NewVKPayTransaction.
+	// VK Event
 	Event interface{}
 }
 

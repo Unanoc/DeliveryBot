@@ -1,4 +1,5 @@
 {
     "connection": "postgres://vkbot:vkbot@localhost:5432/vkbot",
-    "access_token": "VK ACCESS TOKEN"
+    "access_token": "7e420872611f4251cb09eb44333647906d9d125d58be469bafc26d57e79369d69350f17b3b2a39c9a068a",
+    "group_id": 176353269
 }

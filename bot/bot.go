@@ -1,43 +1,65 @@
 package bot
 
 import (
+	"context"
 	"log"
+	"os"
+	"os/signal"
+	"time"
+	"vkbot/api/bot"
+	"vkbot/api/vk"
 	"vkbot/database"
-
-	vkapi "github.com/dimonchik0036/vk-api"
 )
 
 // Run runs the bot.
-func Run(db *database.DB, accessToken string) {
-	bot, err := vkapi.NewClientFromToken(accessToken)
+func Run(db *database.DB, accessToken string, groupID int) {
+	if accessToken == "" {
+		log.Fatal("token is required")
+	}
+
+	baseAPI, err := vk.NewBaseAPI(vk.BaseAPIConfig{
+		AccessToken: accessToken,
+	})
 	if err != nil {
-		log.Panic(err)
+		log.Fatal("Cant create baseAPI:", err)
 	}
 
-	bot.Log(true)
-
-	if err := bot.InitLongPoll(0, 2); err != nil {
-		log.Panic(err)
-	}
-
-	LPCfg := vkapi.LPConfig{
-		Wait: 25,
-		Mode: vkapi.LPModeAttachments,
-	}
-	updates, _, err := bot.GetLPUpdatesChan(100, LPCfg)
+	bot, err := bot.NewBot(baseAPI, bot.BotConfig{
+		GroupID: groupID,
+		Poller: &bot.LongPoller{
+			Wait: 10 * time.Second,
+		},
+	})
 	if err != nil {
-		log.Panic(err)
+		log.Fatal("Cant create bot:", err)
 	}
 
-	var msg *vkapi.LPMessage
+	ctx, cancel := context.WithCancel(context.Background())
+	go func(cancel context.CancelFunc) {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+		cancel()
+	}(cancel)
 
-	for update := range updates {
-		msg = update.Message
+	events, err := bot.StartPolling(ctx, 0)
+	if err != nil {
+		log.Fatal("Cat start polling:", err)
+	}
 
-		if msg == nil || !update.IsNewMessage() || msg.Outbox() {
-			continue
+	for e := range events {
+		// log.Printf("Got event: %+v", e)
+
+		switch ev := e.Event.(type) {
+		case vk.MessageNew:
+			from := ev.PeerID
+			text := ev.Text
+
+			log.Printf("New message from %v: `%v`", from, text)
+
+			if text != "" {
+				go msgHandler(bot, db, from, text)
+			}
 		}
-
-		go msgHandler(bot, db, msg.FromID, msg.Text)
 	}
 }
