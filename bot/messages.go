@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -15,7 +17,7 @@ func msgHandler(bot *bot.Bot, db *database.DB, userID int, text string) {
 
 	if text == "/start" {
 		sendMessage(bot, userID, startMsg)
-		// saveUserInfo(bot, db, userID)
+		saveUserInfo(bot, db, userID)
 		// removing order if it is not completed
 		if userState != 0 {
 			database.DeleteOrder(db, userID)
@@ -122,19 +124,25 @@ func getAgeByBirth(bday string) int {
 	return age
 }
 
-// func saveUserInfo(bot *bot.Bot, db *database.DB, userID int) {
-// 	info, err := bot.UsersInfo(vkapi.NewDstFromUserID(userID), "bdate", "first_name", "last_name", "sex")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
+func saveUserInfo(bot *bot.Bot, db *database.DB, userID int) {
+	a, err := bot.Request("users.get", vk.UsersGetParams{
+		UserIDs: []string{strconv.Itoa(userID)},
+		Fields:  []string{"sex, bdate"},
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
 
-// 	database.CreateOrUpdateUser(
-// 		db,
-// 		userID,
-// 		info[0].FirstName,
-// 		info[0].LastName,
-// 		getAgeByBirth(info[0].Bdate),
-// 		info[0].Sex,
-// 	)
-// }
+	var users vk.UsersGetResponse
+	err = json.Unmarshal(a, &users)
+	user := users[0]
+
+	database.CreateOrUpdateUser(
+		db,
+		user.ID,
+		user.FirstName,
+		user.LastName,
+		getAgeByBirth(user.BirthDate),
+		user.Sex,
+	)
+}
