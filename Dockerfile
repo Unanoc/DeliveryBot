@@ -42,4 +42,5 @@ USER root
 VOLUME ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 EXPOSE 5432
 
+USER postgres
 CMD service postgresql start && ./vkbot -config="config.json"
