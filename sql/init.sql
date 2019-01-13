@@ -1,6 +1,6 @@
 -- TABLE "users" --
 CREATE TABLE IF NOT EXISTS users (
-  "id"        INT UNIQUE NOT NULL PRIMARY KEY,
+  "id"        INT PRIMARY KEY,
   "firstname" CITEXT NOT NULL,
   "lastname"  CITEXT NOT NULL,
   "age"       INT,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- TABLE "orders" --
 CREATE TABLE IF NOT EXISTS orders (
-  "id"            SERIAL UNIQUE PRIMARY KEY,
+  "id"            SERIAL PRIMARY KEY,
   "user_id"       INT NOT NULL,
   "firstname"     CITEXT DEFAULT NULL,
   "lastname"      CITEXT DEFAULT NULL,
@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS orders (
 
 -- TABLE "states" --
 CREATE TABLE IF NOT EXISTS states (
-  "user_id"     INT UNIQUE PRIMARY KEY NOT NULL,
+  "user_id"     INT PRIMARY KEY,
   "state"       INT DEFAULT 0 NOT NULL
 );
