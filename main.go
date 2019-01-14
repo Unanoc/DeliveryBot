@@ -34,5 +34,7 @@ func main() {
 	defer db.Disconnect()
 
 	// Launching bot
-	bot.Run(&db, config.AccessToken, config.GroupID)
+	if err := bot.Run(&db, config.AccessToken, config.GroupID); err != nil {
+		log.Panic(err)
+	}
 }

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -12,16 +13,16 @@ import (
 )
 
 // Run runs the bot.
-func Run(db *database.DB, accessToken string, groupID int) {
+func Run(db *database.DB, accessToken string, groupID int) error {
 	if accessToken == "" {
-		log.Fatal("token is required")
+		return fmt.Errorf("token is required")
 	}
 
 	baseAPI, err := vk.NewBaseAPI(vk.BaseAPIConfig{
 		AccessToken: accessToken,
 	})
 	if err != nil {
-		log.Fatal("Cant create baseAPI:", err)
+		return err
 	}
 
 	bot, err := bot.NewBot(baseAPI, bot.BotConfig{
@@ -31,7 +32,7 @@ func Run(db *database.DB, accessToken string, groupID int) {
 		},
 	})
 	if err != nil {
-		log.Fatal("Cant create bot:", err)
+		return err
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -45,7 +46,7 @@ func Run(db *database.DB, accessToken string, groupID int) {
 
 	events, err := bot.StartPolling(ctx, 0)
 	if err != nil {
-		log.Fatal("Cat start polling:", err)
+		return err
 	}
 
 	for e := range events {
@@ -61,4 +62,6 @@ func Run(db *database.DB, accessToken string, groupID int) {
 			}
 		}
 	}
+
+	return err
 }
