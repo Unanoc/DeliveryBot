@@ -18,7 +18,9 @@ type Order struct {
 }
 
 func (o Order) String() string {
-	return fmt.Sprintf("Номер заказа: %d\nИмя: %s\nФамилия: %s\nТелефон: %s\nКомпания: %s\nАдрес: %s\nДата доставки: %s\nДата заказа: %s",
+	return fmt.Sprintf(
+		"Номер заказа: %d\nИмя: %s\nФамилия: %s\nТелефон: %s\n"+
+			"Компания: %s\nАдрес: %s\nДата доставки: %s\nДата заказа: %s",
 		o.OrderID,
 		o.FirstName,
 		o.LastName,
