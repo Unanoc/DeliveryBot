@@ -11,6 +11,6 @@
 * Демо бота должно работать непосредственно в VK
 
 ## Пример работы бота
-<img src="https://github.com/Unanoc/DeliveryBot/tree/master/src/sample1.png" width="720">
+<img src="https://github.com/Unanoc/DeliveryBot/blob/master/src/sample1.png" width="720">
 
-<img src="https://github.com/Unanoc/DeliveryBot/tree/master/src/sample2.png" width="720">
+<img src="https://github.com/Unanoc/DeliveryBot/blob/master/src/sample2.png" width="720">
