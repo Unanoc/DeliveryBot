@@ -13,4 +13,4 @@
 ## Пример работы бота
 <img src="https://github.com/Unanoc/DeliveryBot/blob/master/src/sample1.png" width="500">
 
-<img src="https://github.com/Unanoc/DeliveryBot/blob/master/src/sample2.png" width="520">
+<img src="https://github.com/Unanoc/DeliveryBot/blob/master/src/sample2.png" width="500">
